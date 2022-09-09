@@ -7,11 +7,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.get('/', async (req, res) => {
+app.get('/token', async (req, res) => {
   try {
     const response = await axios.post('https://api.assemblyai.com/v2/realtime/token', 
       { expires_in: 3600 }, 
-      { headers: { authorization: `${process.env.API_KEY}` } }); 
+      { headers: { authorization: `${process.env.AAI_KEY}` } }); 
     const { data } = response; 
     res.json(data); 
   } catch (error) {
@@ -19,6 +19,11 @@ app.get('/', async (req, res) => {
     res.status(status).json(data);
   }
 });
+
+app.get('/key', (req, res) => {
+  res.json(process.env.OPEN_AI_KEY)
+});
+
 
 app.set('port', 8000);
 const server = app.listen(app.get('port'), () => {

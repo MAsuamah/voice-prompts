@@ -4,7 +4,7 @@ import * as RecordRTC from 'recordrtc';
 const VoicePrompt = () => {
   const socket = useRef(null)
   const recorder = useRef(null)
-  const isRecording = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
   const [prompt, setPrompt] = useState('')
   
   const getVoicePrompt = async () => {
@@ -13,6 +13,7 @@ const VoicePrompt = () => {
       if(socket.current) {
         socket.current.send(JSON.stringify({terminate_session: true}));
         socket.current.close();
+        console.log(prompt)
         socket.current = null;
       }
     }
@@ -21,7 +22,7 @@ const VoicePrompt = () => {
       recorder.current.pauseRecording();
       recorder.current = null;
     } else {
-      const response = await fetch('http://localhost:8000');
+      const response = await fetch('http://localhost:8000/token');
       const data = await response.json();
   
       if(data.error){
@@ -37,7 +38,6 @@ const VoicePrompt = () => {
         let msg = '';
         const res = JSON.parse(voicePrompt.data);
         texts[res.audio_start] = res.text;
-        console.log(texts)
         const keys = Object.keys(texts);
         keys.sort((a, b) => a - b);
         for (const key of keys) {
@@ -87,7 +87,14 @@ const VoicePrompt = () => {
           .catch((err) => console.error(err));
       };
     }
+    
+    setIsRecording(isRecording => !isRecording)
+  
   };
+
+
+
+
 
   return (
     <>
